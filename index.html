@@ -311,8 +311,10 @@
       ctx.stroke();
 
       if (iconCache['__logo__']) {
-        const s = r * 1.4;
-        ctx.drawImage(iconCache['__logo__'], cx - s / 2, cy - s / 2, s, s);
+        // Logo is 462:96 (wide) — fit within centre circle maintaining aspect ratio
+        const maxW = r * 1.7;
+        const lh = maxW * (96 / 462);
+        ctx.drawImage(iconCache['__logo__'], cx - maxW / 2, cy - lh / 2, maxW, lh);
       } else {
         ctx.fillStyle = '#E2001A';
         ctx.font = `bold ${Math.round(r * 1.1)}px 'Helvetica Neue', Arial, sans-serif`;
