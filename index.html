@@ -296,7 +296,7 @@
       });
 
       // Centre circle
-      const r = radius * 0.24;
+      const r = radius * 0.34;
       ctx.beginPath();
       ctx.arc(cx, cy, r, 0, 2 * Math.PI);
       ctx.fillStyle = '#fff';
@@ -312,7 +312,7 @@
 
       if (iconCache['__logo__']) {
         // Logo is 462:96 (wide) — fit within centre circle maintaining aspect ratio
-        const maxW = r * 3.4;
+        const maxW = r * 1.8;
         const lh = maxW * (96 / 462);
         ctx.drawImage(iconCache['__logo__'], cx - maxW / 2, cy - lh / 2, maxW, lh);
       } else {
