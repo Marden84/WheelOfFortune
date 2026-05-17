@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conforama Glücksrad</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #f5f5f5;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-header {
+      background: #E2001A;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 12px 32px;
+      flex-shrink: 0;
+    }
+
+    .brand-logo { height: 44px; filter: brightness(0) invert(1); }
+    .brand-tagline { font-size: 1.25rem; font-weight: 500; }
+
+    .wheel-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .wheel-wrapper {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #wheelCanvas {
+      display: block;
+      border-radius: 50%;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+    }
+
+    .pointer {
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 18px solid transparent;
+      border-right: 18px solid transparent;
+      border-top: 36px solid #E2001A;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+      z-index: 10;
+    }
+
+    /* QR panel */
+    .qr-panel {
+      position: fixed;
+      bottom: 28px; right: 28px;
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+      text-align: center;
+      z-index: 20;
+    }
+
+    .qr-label {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #E2001A;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    #qrCode img, #qrCode canvas { width: 180px !important; height: 180px !important; display: block; }
+
+    .qr-sublabel { font-size: 0.75rem; color: #666; margin-top: 6px; }
+
+    .player-ring {
+      position: absolute;
+      inset: -6px;
+      border-radius: 20px;
+      border: 4px solid #3AAA35;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .player-ring.active {
+      opacity: 1;
+      animation: pulse-ring 1.2s ease-in-out infinite;
+    }
+    @keyframes pulse-ring {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.04); opacity: 0.6; }
+    }
+
+    /* Result overlay */
+    .result-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .result-overlay.visible { opacity: 1; pointer-events: auto; }
+
+    .result-card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 48px 64px;
+      text-align: center;
+      max-width: 520px;
+      box-shadow: 0 16px 60px rgba(0,0,0,0.3);
+      transform: scale(0.8);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .result-overlay.visible .result-card { transform: scale(1); }
+
+    #resultIcon { width: 100px; height: 100px; margin-bottom: 20px; }
+    #resultMessage {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      white-space: pre-line;
+      line-height: 1.3;
+    }
+
+    .confetti-canvas {
+      position: fixed; inset: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 40;
+    }
+
+    .status-bar {
+      position: fixed;
+      bottom: 28px; left: 28px;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      z-index: 20;
+    }
+  </style>
+</head>
+<body>
+  <header class="brand-header">
+    <img src="./public/assets/logo.svg" alt="Conforama" class="brand-logo">
+    <p class="brand-tagline">Dreh am Glücksrad und gewinne fantastische Preise!</p>
+  </header>
+
+  <main class="wheel-area">
+    <div class="wheel-wrapper">
+      <div class="pointer"></div>
+      <canvas id="wheelCanvas"></canvas>
+    </div>
+  </main>
+
+  <aside class="qr-panel" id="qrPanel">
+    <p class="qr-label">Scan zum Spielen!</p>
+    <div id="qrCode"></div>
+    <p class="qr-sublabel">Mit dem Handy scannen</p>
+    <div class="player-ring" id="playerRing"></div>
+  </aside>
+
+  <div class="status-bar" id="statusBar">Verbinde…</div>
+
+  <div class="result-overlay" id="resultOverlay">
+    <div class="result-card">
+      <img id="resultIcon" src="" alt="">
+      <p id="resultMessage"></p>
+    </div>
+  </div>
+
+  <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
+
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="./public/assets/confetti.js"></script>
+  <script>
+    'use strict';
+
+    // ── Canvas ────────────────────────────────────────────────────────
+    const canvas = document.getElementById('wheelCanvas');
+    const ctx = canvas.getContext('2d');
+    const confettiCanvas = document.getElementById('confettiCanvas');
+
+    function resizeCanvas() {
+      const size = Math.min(window.innerWidth * 0.72, window.innerHeight * 0.78, 780);
+      canvas.width = size;
+      canvas.height = size;
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+      if (segments.length) drawWheel(currentAngle);
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    // ── State ─────────────────────────────────────────────────────────
+    let segments = [];
+    let currentAngle = 0;
+    let isSpinning = false;
+    let currentConn = null;
+
+    // ── Icon cache ────────────────────────────────────────────────────
+    const iconCache = {};
+
+    function preloadIcons(segs) {
+      return Promise.all(segs.map(seg =>
+        new Promise(resolve => {
+          const img = new Image();
+          img.onload = () => { iconCache[seg.id] = img; resolve(); };
+          img.onerror = () => resolve();
+          img.src = seg.iconPath;
+        })
+      ));
+    }
+
+    // ── Wheel drawing ─────────────────────────────────────────────────
+    function drawWheel(angle) {
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const radius = cx - 6;
+      const n = segments.length;
+      const segAngle = (2 * Math.PI) / n;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius + 4, 0, 2 * Math.PI);
+      ctx.shadowColor = 'rgba(0,0,0,0.3)';
+      ctx.shadowBlur = 20;
+      ctx.fillStyle = '#fff';
+      ctx.fill();
+      ctx.restore();
+
+      segments.forEach((seg, i) => {
+        const startAngle = angle + i * segAngle;
+        const endAngle = startAngle + segAngle;
+        const midAngle = startAngle + segAngle / 2;
+
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = seg.color;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + radius * Math.cos(startAngle), cy + radius * Math.sin(startAngle));
+        ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        const iconR = radius * 0.60;
+        const iconSize = radius * 0.22;
+        if (iconCache[seg.id]) {
+          ctx.save();
+          ctx.translate(cx + iconR * Math.cos(midAngle), cy + iconR * Math.sin(midAngle));
+          ctx.rotate(midAngle + Math.PI / 2);
+          ctx.drawImage(iconCache[seg.id], -iconSize / 2, -iconSize / 2, iconSize, iconSize);
+          ctx.restore();
+        }
+
+        const labelR = radius * 0.82;
+        const fontSize = Math.max(11, Math.round(radius * 0.065));
+        ctx.save();
+        ctx.translate(cx + labelR * Math.cos(midAngle), cy + labelR * Math.sin(midAngle));
+        ctx.rotate(midAngle + Math.PI / 2);
+        ctx.fillStyle = seg.textColor;
+        ctx.font = `bold ${fontSize}px 'Helvetica Neue', Arial, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const lines = seg.label.split('\n');
+        const lineH = fontSize * 1.25;
+        const offsetY = -((lines.length - 1) * lineH) / 2;
+        lines.forEach((line, li) => ctx.fillText(line, 0, offsetY + li * lineH));
+        ctx.restore();
+      });
+
+      // Centre circle
+      const r = radius * 0.18;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+      ctx.fillStyle = '#fff';
+      ctx.shadowColor = 'rgba(0,0,0,0.2)';
+      ctx.shadowBlur = 8;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r - 3, 0, 2 * Math.PI);
+      ctx.strokeStyle = '#E2001A';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      if (iconCache['__logo__']) {
+        const s = r * 1.4;
+        ctx.drawImage(iconCache['__logo__'], cx - s / 2, cy - s / 2, s, s);
+      } else {
+        ctx.fillStyle = '#E2001A';
+        ctx.font = `bold ${Math.round(r * 1.1)}px 'Helvetica Neue', Arial, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('C', cx, cy);
+      }
+    }
+
+    // ── Spin animation ────────────────────────────────────────────────
+    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+    function spinTo(targetAngle, duration, onComplete) {
+      const startAngle = currentAngle;
+      const startTime = performance.now();
+
+      function frame(now) {
+        const t = Math.min((now - startTime) / duration, 1);
+        currentAngle = startAngle + (targetAngle - startAngle) * easeOutCubic(t);
+        drawWheel(currentAngle);
+        if (t < 1) {
+          requestAnimationFrame(frame);
+        } else {
+          currentAngle = targetAngle % (2 * Math.PI);
+          isSpinning = false;
+          if (onComplete) onComplete();
+        }
+      }
+      isSpinning = true;
+      requestAnimationFrame(frame);
+    }
+
+    // ── Game logic ────────────────────────────────────────────────────
+    function pickWinner() {
+      const rand = Math.random();
+      let cumulative = 0;
+      for (const seg of segments) {
+        cumulative += seg.probability;
+        if (rand < cumulative) return seg;
+      }
+      return segments[segments.length - 1];
+    }
+
+    function computeTargetAngle(segmentIndex) {
+      const segAngle = (2 * Math.PI) / segments.length;
+      const jitter = (Math.random() - 0.5) * segAngle * 0.4;
+      const segCentre = segmentIndex * segAngle + segAngle / 2 + jitter;
+      let offset = (-Math.PI / 2) - segCentre - currentAngle;
+      offset = ((offset % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+      return {
+        targetAngle: currentAngle + 5 * 2 * Math.PI + offset,
+        duration: 3000 + Math.random() * 1500
+      };
+    }
+
+    function doSpin(conn) {
+      const winner = pickWinner();
+      const { targetAngle, duration } = computeTargetAngle(segments.findIndex(s => s.id === winner.id));
+
+      conn.send({ type: 'spin-start' });
+
+      spinTo(targetAngle, duration, () => {
+        if (winner.isRetry) {
+          showResult(winner);
+          conn.send({ type: 'retry' });
+          setTimeout(hideResult, 3000);
+        } else {
+          showResult(winner);
+          if (winner.isWin) confetti.launch(confettiCanvas);
+          conn.send({ type: 'result', segment: winner, isWin: winner.isWin, message: winner.winMessage });
+          setTimeout(() => {
+            hideResult();
+            if (conn.open) conn.close();
+          }, 5000);
+        }
+      });
+    }
+
+    // ── UI helpers ────────────────────────────────────────────────────
+    const statusBar = document.getElementById('statusBar');
+    const playerRing = document.getElementById('playerRing');
+    const resultOverlay = document.getElementById('resultOverlay');
+
+    function setStatus(msg) { statusBar.textContent = msg; }
+
+    function showResult(seg) {
+      document.getElementById('resultIcon').src = seg.iconPath;
+      document.getElementById('resultIcon').alt = seg.label.replace('\n', ' ');
+      document.getElementById('resultMessage').textContent =
+        seg.isWin ? seg.winMessage : seg.isRetry ? 'Nochmal drehen!' : 'Leider nichts gewonnen';
+      resultOverlay.classList.add('visible');
+    }
+    function hideResult() { resultOverlay.classList.remove('visible'); }
+
+    function resetToIdle() {
+      currentConn = null;
+      playerRing.classList.remove('active');
+      document.getElementById('qrPanel').style.display = 'block';
+      setStatus('Warte auf Spieler…');
+      hideResult();
+    }
+
+    function generateQR(url) {
+      const container = document.getElementById('qrCode');
+      container.innerHTML = '';
+      new QRCode(container, { text: url, width: 180, height: 180, correctLevel: QRCode.CorrectLevel.M });
+    }
+
+    // ── PeerJS ────────────────────────────────────────────────────────
+    const peer = new Peer();
+
+    peer.on('open', id => {
+      const url = new URL('controller.html?peer=' + id, window.location.href).href;
+      generateQR(url);
+      setStatus('Warte auf Spieler…');
+    });
+
+    peer.on('connection', conn => {
+      if (currentConn && currentConn.open) {
+        conn.on('open', () => {
+          conn.send({ type: 'error', message: 'Rad ist gerade besetzt. Bitte warten.' });
+          setTimeout(() => conn.close(), 500);
+        });
+        return;
+      }
+
+      currentConn = conn;
+      playerRing.classList.add('active');
+      document.getElementById('qrPanel').style.display = 'none';
+      setStatus('Spieler verbunden!');
+
+      conn.on('open', () => conn.send({ type: 'ready', segments }));
+
+      conn.on('data', data => {
+        if (data.type === 'spin' && !isSpinning) doSpin(conn);
+      });
+
+      conn.on('close', resetToIdle);
+      conn.on('error', resetToIdle);
+    });
+
+    peer.on('error', err => setStatus('Fehler: ' + err.type));
+
+    // ── Init ──────────────────────────────────────────────────────────
+    async function init() {
+      try {
+        const resp = await fetch('./config/segments.json');
+        const data = await resp.json();
+        segments = data.segments;
+
+        const logo = new Image();
+        logo.onload = () => { iconCache['__logo__'] = logo; drawWheel(currentAngle); };
+        logo.src = './public/assets/logo.svg';
+
+        await preloadIcons(segments);
+        resizeCanvas();
+      } catch (e) {
+        setStatus('Fehler beim Laden der Konfiguration');
+        console.error(e);
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
