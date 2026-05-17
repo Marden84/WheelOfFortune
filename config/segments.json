@@ -1,0 +1,75 @@
+{
+  "branding": {
+    "primaryColor": "#E2001A",
+    "secondaryColor": "#FFFFFF",
+    "title": "Dreh am Glücksrad und gewinne fantastische Preise!"
+  },
+  "segments": [
+    {
+      "id": "gutschein",
+      "label": "20 CHF\nGutschein",
+      "color": "#0057A8",
+      "textColor": "#FFFFFF",
+      "iconPath": "/assets/icons/gutschein.svg",
+      "probability": 0.10,
+      "isWin": true,
+      "isRetry": false,
+      "winMessage": "Herzlichen Glückwunsch!\nSie gewinnen einen 20 CHF Gutschein!"
+    },
+    {
+      "id": "lieferung",
+      "label": "Gratis-\nlieferung",
+      "color": "#3AAA35",
+      "textColor": "#FFFFFF",
+      "iconPath": "/assets/icons/lieferung.svg",
+      "probability": 0.15,
+      "isWin": true,
+      "isRetry": false,
+      "winMessage": "Herzlichen Glückwunsch!\nSie erhalten eine Gratislieferung!"
+    },
+    {
+      "id": "deko",
+      "label": "Deko-\nArtikel",
+      "color": "#FFCC00",
+      "textColor": "#333333",
+      "iconPath": "/assets/icons/deko.svg",
+      "probability": 0.15,
+      "isWin": true,
+      "isRetry": false,
+      "winMessage": "Herzlichen Glückwunsch!\nSie gewinnen einen Deko-Artikel!"
+    },
+    {
+      "id": "nochmal",
+      "label": "Nochmal\ndrehen!",
+      "color": "#E2001A",
+      "textColor": "#FFFFFF",
+      "iconPath": "/assets/icons/nochmal.svg",
+      "probability": 0.15,
+      "isWin": false,
+      "isRetry": true,
+      "winMessage": null
+    },
+    {
+      "id": "nichts",
+      "label": "Leider nichts\ngewonnen",
+      "color": "#888888",
+      "textColor": "#FFFFFF",
+      "iconPath": "/assets/icons/nichts.svg",
+      "probability": 0.30,
+      "isWin": false,
+      "isRetry": false,
+      "winMessage": null
+    },
+    {
+      "id": "rabatt",
+      "label": "Sofortrabatt\n-10%",
+      "color": "#F47920",
+      "textColor": "#FFFFFF",
+      "iconPath": "/assets/icons/rabatt.svg",
+      "probability": 0.15,
+      "isWin": true,
+      "isRetry": false,
+      "winMessage": "Herzlichen Glückwunsch!\nSie erhalten 10% Sofortrabatt!"
+    }
+  ]
+}

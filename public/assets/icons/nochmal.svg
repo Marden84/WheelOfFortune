@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Circular retry arrow -->
+  <path d="M32 10 A22 22 0 1 1 12 30" stroke="white" stroke-width="6" stroke-linecap="round" fill="none" opacity="0.9"/>
+  <!-- Arrow head pointing clockwise -->
+  <polygon points="8,18 18,26 20,14" fill="white" opacity="0.9"/>
+</svg>

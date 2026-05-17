@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Ticket / Voucher -->
+  <rect x="4" y="18" width="56" height="28" rx="4" fill="white" opacity="0.9"/>
+  <circle cx="4" cy="26" r="6" fill="#0057A8"/>
+  <circle cx="4" cy="42" r="6" fill="#0057A8"/>
+  <circle cx="60" cy="26" r="6" fill="#0057A8"/>
+  <circle cx="60" cy="42" r="6" fill="#0057A8"/>
+  <line x1="24" y1="18" x2="24" y2="46" stroke="#0057A8" stroke-width="2" stroke-dasharray="3 3"/>
+  <text x="38" y="36" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#0057A8">20</text>
+  <text x="38" y="47" text-anchor="middle" font-family="Arial,sans-serif" font-size="7" font-weight="bold" fill="#0057A8">CHF</text>
+  <rect x="8" y="26" width="12" height="3" rx="1" fill="#0057A8" opacity="0.4"/>
+  <rect x="8" y="32" width="12" height="3" rx="1" fill="#0057A8" opacity="0.4"/>
+  <rect x="8" y="38" width="12" height="3" rx="1" fill="#0057A8" opacity="0.4"/>
+</svg>

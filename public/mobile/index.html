@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#E2001A">
+  <title>Conforama Glücksrad</title>
+  <link rel="stylesheet" href="/mobile/mobile.css">
+</head>
+<body>
+  <header class="mobile-header">
+    <img src="/assets/logo.svg" alt="Conforama" class="mobile-logo">
+  </header>
+
+  <main class="mobile-main" id="stateConnecting">
+    <div class="spinner"></div>
+    <p class="state-text">Verbinde…</p>
+  </main>
+
+  <main class="mobile-main hidden" id="stateReady">
+    <div class="wheel-preview">🎡</div>
+    <h1 class="main-title">Dein Glück wartet!</h1>
+    <p class="main-sub">Drück den Knopf und dreh das Rad</p>
+    <button class="spin-btn" id="spinBtn">DREHEN!</button>
+  </main>
+
+  <main class="mobile-main hidden" id="stateSpinning">
+    <div class="spinning-indicator">
+      <div class="spin-anim"></div>
+    </div>
+    <p class="state-text">Das Rad dreht sich…</p>
+  </main>
+
+  <main class="mobile-main hidden" id="stateResult">
+    <canvas id="mobileConfettiCanvas" class="mobile-confetti"></canvas>
+    <div class="result-wrap" id="resultWrap">
+      <img id="mobileResultIcon" src="" alt="" class="result-icon">
+      <p id="mobileResultMessage" class="result-message"></p>
+    </div>
+  </main>
+
+  <main class="mobile-main hidden" id="stateRetry">
+    <div class="retry-icon">🎉</div>
+    <h1 class="main-title">Nochmal drehen!</h1>
+    <p class="main-sub">Du hast einen Extra-Spin gewonnen!</p>
+    <button class="spin-btn" id="retryBtn">NOCHMAL!</button>
+  </main>
+
+  <main class="mobile-main hidden" id="stateError">
+    <div class="error-icon">😕</div>
+    <p class="state-text" id="errorText">Verbindungsfehler</p>
+    <button class="reload-btn" onclick="location.reload()">Neu laden</button>
+  </main>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/assets/confetti.js"></script>
+  <script src="/mobile/mobile.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Sad face -->
+  <circle cx="32" cy="32" r="26" fill="white" opacity="0.85"/>
+  <!-- Eyes -->
+  <circle cx="22" cy="26" r="3" fill="#888"/>
+  <circle cx="42" cy="26" r="3" fill="#888"/>
+  <!-- Sad mouth -->
+  <path d="M20 42 Q32 34 44 42" stroke="#888" stroke-width="3" stroke-linecap="round" fill="none"/>
+</svg>

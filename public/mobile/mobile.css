@@ -1,0 +1,195 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --red: #E2001A;
+  --white: #fff;
+  --bg: #f5f5f5;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* ── Header ── */
+.mobile-header {
+  background: var(--red);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-logo {
+  height: 36px;
+  filter: brightness(0) invert(1);
+}
+
+/* ── Main sections ── */
+.mobile-main {
+  position: absolute;
+  top: 64px; /* below header */
+  left: 0; right: 0; bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  gap: 20px;
+  text-align: center;
+  transition: opacity 0.3s ease;
+}
+
+.mobile-main.hidden {
+  display: none;
+}
+
+/* ── Connecting spinner ── */
+.spinner {
+  width: 56px;
+  height: 56px;
+  border: 5px solid #ddd;
+  border-top-color: var(--red);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Spinning indicator ── */
+.spinning-indicator {
+  width: 90px;
+  height: 90px;
+  position: relative;
+}
+
+.spin-anim {
+  width: 90px;
+  height: 90px;
+  border: 6px solid #ddd;
+  border-top-color: var(--red);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* ── Text styles ── */
+.state-text {
+  font-size: 1.2rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.main-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  line-height: 1.2;
+}
+
+.main-sub {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+/* ── Wheel preview emoji ── */
+.wheel-preview {
+  font-size: 4rem;
+  animation: bounce 1.5s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* ── DREHEN button ── */
+.spin-btn, .reload-btn {
+  background: var(--red);
+  color: var(--white);
+  border: none;
+  border-radius: 16px;
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  padding: 22px 60px;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(226,0,26,0.4);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+  min-width: 240px;
+}
+
+.spin-btn:active, .reload-btn:active {
+  transform: scale(0.96);
+  box-shadow: 0 2px 10px rgba(226,0,26,0.3);
+}
+
+.spin-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.reload-btn {
+  font-size: 1.1rem;
+  padding: 16px 40px;
+  background: #555;
+  box-shadow: none;
+}
+
+/* ── Result state ── */
+#stateResult {
+  position: absolute;
+  top: 64px;
+  left: 0; right: 0; bottom: 0;
+}
+
+.mobile-confetti {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.result-wrap {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 32px 24px;
+  background: rgba(255,255,255,0.92);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  max-width: 340px;
+  width: 100%;
+  animation: pop-in 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+@keyframes pop-in {
+  from { transform: scale(0.6); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.result-icon {
+  width: 90px;
+  height: 90px;
+}
+
+.result-message {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  white-space: pre-line;
+  line-height: 1.4;
+}
+
+/* ── Retry state ── */
+.retry-icon { font-size: 4rem; }
+
+/* ── Error state ── */
+.error-icon { font-size: 4rem; }

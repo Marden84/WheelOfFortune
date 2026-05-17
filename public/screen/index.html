@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conforama Glücksrad</title>
+  <link rel="stylesheet" href="/screen/screen.css">
+</head>
+<body>
+  <header class="brand-header">
+    <img src="/assets/logo.svg" alt="Conforama" class="brand-logo">
+    <p class="brand-tagline">Dreh am Glücksrad und gewinne fantastische Preise!</p>
+  </header>
+
+  <main class="wheel-area">
+    <div class="wheel-wrapper">
+      <div class="pointer"></div>
+      <canvas id="wheelCanvas"></canvas>
+    </div>
+  </main>
+
+  <aside class="qr-panel" id="qrPanel">
+    <div class="qr-inner">
+      <p class="qr-label">Scan zum Spielen!</p>
+      <img id="qrImage" src="" alt="QR Code" class="qr-image">
+      <p class="qr-sublabel">Mit dem Handy scannen</p>
+    </div>
+    <div class="player-joined-ring" id="playerRing"></div>
+  </aside>
+
+  <div class="result-overlay" id="resultOverlay">
+    <div class="result-card" id="resultCard">
+      <img id="resultIcon" src="" alt="">
+      <p id="resultMessage"></p>
+    </div>
+  </div>
+
+  <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/assets/confetti.js"></script>
+  <script src="/screen/screen.js"></script>
+</body>
+</html>
