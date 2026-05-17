@@ -128,7 +128,14 @@
       from { transform: scale(0.6); opacity: 0; }
       to   { transform: scale(1);   opacity: 1; }
     }
-    .result-icon { width: 90px; height: 90px; }
+    .result-icon-wrap {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      padding: 18px;
+      flex-shrink: 0;
+    }
+    .result-icon { width: 100%; height: 100%; }
     .result-msg {
       font-size: 1.35rem;
       font-weight: 700;
@@ -172,7 +179,9 @@
   <div class="screen hidden" id="screenResult">
     <canvas class="confetti-layer" id="confettiCanvas"></canvas>
     <div class="result-card">
-      <img class="result-icon" id="resultIcon" src="" alt="">
+      <div class="result-icon-wrap" id="resultIconWrap">
+        <img class="result-icon" id="resultIcon" src="" alt="">
+      </div>
       <p class="result-msg" id="resultMsg"></p>
     </div>
   </div>
@@ -245,6 +254,7 @@
 
         } else if (data.type === 'result') {
           resizeConfetti();
+          document.getElementById('resultIconWrap').style.background = data.segment.color;
           document.getElementById('resultIcon').src = data.segment.iconPath;
           document.getElementById('resultIcon').alt = data.segment.label.replace('\n', ' ');
           document.getElementById('resultMsg').textContent =
